@@ -1,0 +1,129 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "GetAccessToken",
+        "type": "WebActivity",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json"
+          },
+          "relativeUrl": "/v1/security/oauth2/token",
+          "body": "grant_type=client_credentials&client_id=RSVWeFmDqjXpxGbT2T6qko1cJxzFvhxn&client_secret=ZPGeIkYUhkPeVGGb"
+        },
+        "externalReferences": {
+          "connection": "eed07cf2-873b-48f7-813c-88bfbb5ffbaf"
+        }
+      },
+      {
+        "name": "SetOAuthToken",
+        "type": "SetVariable",
+        "dependsOn": [
+          {
+            "activity": "GetAccessToken",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ],
+        "policy": {
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "variableName": "OAuthToken",
+          "value": {
+            "value": "@activity('GetAccessToken').output.access_token",
+            "type": "Expression"
+          }
+        }
+      },
+      {
+        "name": "v2 Flight Offers Search",
+        "type": "WebActivity",
+        "dependsOn": [
+          {
+            "activity": "SetOAuthToken",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "method": "POST",
+          "headers": {
+            "Authorization": {
+              "value": "Bearer @{variables('OAuthToken')}",
+              "type": "Expression"
+            },
+            "Accept": "application/json",
+            "Content-Type": "application/vnd.amadeus+json"
+          },
+          "relativeUrl": "/v2/shopping/flight-offers",
+          "body": {
+            "currencyCode": "USD",
+            "originDestinations": [
+              {
+                "id": "1",
+                "originLocationCode": "LAX",
+                "destinationLocationCode": "BOG",
+                "departureDateTimeRange": {
+                  "date": "2025-07-01",
+                  "time": "10:00:00"
+                }
+              }
+            ],
+            "travelers": [
+              {
+                "id": "1",
+                "travelerType": "ADULT"
+              }
+            ],
+            "sources": [
+              "GDS"
+            ],
+            "searchCriteria": {
+              "maxFlightOffers": 5,
+              "flightFilters": {
+                "cabinRestrictions": [
+                  {
+                    "cabin": "BUSINESS",
+                    "coverage": "MOST_SEGMENTS",
+                    "originDestinationIds": [
+                      "1"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "externalReferences": {
+          "connection": "eed07cf2-873b-48f7-813c-88bfbb5ffbaf"
+        }
+      }
+    ],
+    "variables": {
+      "OAuthToken": {
+        "type": "String"
+      }
+    }
+  }
+}

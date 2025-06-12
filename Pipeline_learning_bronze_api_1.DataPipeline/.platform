@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "Pipeline_learning_bronze_api_1"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "3b4c66c8-93a7-8509-4bb0-fa1391983ed5"
+  }
+}
