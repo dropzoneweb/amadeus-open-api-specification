@@ -82,11 +82,11 @@
             "originDestinations": [
               {
                 "id": "1",
-                "originLocationCode": "LAX",
-                "destinationLocationCode": "BOG",
+                "originLocationCode": "@pipeline().parameters.originLocationCode",
+                "destinationLocationCode": "@pipeline().parameters.destinationLocationCode",
                 "departureDateTimeRange": {
-                  "date": "2025-07-01",
-                  "time": "10:00:00"
+                  "date": "@pipeline().parameters.departureDate",
+                  "time": "@pipeline().parameters.departureTime"
                 }
               }
             ],
@@ -104,7 +104,7 @@
               "flightFilters": {
                 "cabinRestrictions": [
                   {
-                    "cabin": "BUSINESS",
+                    "cabin": "@pipeline().parameters.cabin",
                     "coverage": "MOST_SEGMENTS",
                     "originDestinationIds": [
                       "1"
@@ -120,6 +120,23 @@
         }
       }
     ],
+    "parameters": {
+      "originLocationCode": {
+        "type": "string"
+      },
+      "destinationLocationCode": {
+        "type": "string"
+      },
+      "departureDate": {
+        "type": "string"
+      },
+      "departureTime": {
+        "type": "string"
+      },
+      "cabin": {
+        "type": "string"
+      }
+    },
     "variables": {
       "OAuthToken": {
         "type": "String"
